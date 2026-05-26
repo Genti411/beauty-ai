@@ -25,7 +25,7 @@ export async function getProfile(userId: string): Promise<Profile | null> {
     .from('profiles')
     .select('id, display_name, created_at')
     .eq('id', userId)
-    .single();
+    .maybeSingle();
   if (error) throw error;
   return data ? rowToProfile(data as ProfileRow) : null;
 }
