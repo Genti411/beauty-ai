@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { View, Text, TextInput, Button, Alert, StyleSheet } from 'react-native';
 import { supabase } from '@/lib/supabase';
 import { normalizeEmail, isValidEmail } from '@/auth/email';
+import { AppleSignInButton } from '@/auth/AppleSignInButton';
 
 export default function SignIn() {
   const [email, setEmail] = useState('');
@@ -68,6 +69,8 @@ export default function SignIn() {
           <Button title={busy ? 'Verifying…' : 'Verify'} onPress={verifyCode} disabled={busy} />
         </>
       )}
+      <View style={styles.spacer} />
+      <AppleSignInButton />
     </View>
   );
 }
@@ -76,4 +79,5 @@ const styles = StyleSheet.create({
   container: { flex: 1, justifyContent: 'center', padding: 24, gap: 12 },
   title: { fontSize: 28, fontWeight: '700', textAlign: 'center', marginBottom: 24 },
   input: { borderWidth: 1, borderColor: '#ccc', borderRadius: 8, padding: 12 },
+  spacer: { height: 16 },
 });
