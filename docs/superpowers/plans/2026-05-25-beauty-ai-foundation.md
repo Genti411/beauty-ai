@@ -10,6 +10,16 @@
 
 ---
 
+## PLAN CORRECTION (recorded after Task 1 scaffold)
+
+The SDK 56 default template scaffolds into a **`src/` layout**. Two consequences for every later task:
+
+- **Routes live under `src/app/`, not `app/`.** Wherever this plan says `app/_layout.tsx`, `app/(auth)/sign-in.tsx`, `app/(app)/index.tsx`, etc., read it as `src/app/...`. Library code also lives under `src/` (`src/lib`, `src/auth`, `src/profile`).
+- **The `@/* → ./src/*` path alias already exists** in the template's `tsconfig.json` (it also maps `@/assets/*`). Task 2's "set the alias" step is therefore a **verify-only** step — do not overwrite the template tsconfig.
+- Template demo routes present after scaffold: `src/app/index.tsx`, `src/app/explore.tsx`, `src/app/_layout.tsx`. Task 7 replaces `_layout.tsx` and removes the demo screens (`index.tsx`, `explore.tsx`); there is no `(tabs)` group or `+not-found.tsx` file to delete.
+
+---
+
 ## Platform constraint (read first)
 
 The developer machine is **Windows 11**. iOS cannot be built or run locally on Windows.
@@ -22,21 +32,22 @@ The developer machine is **Windows 11**. iOS cannot be built or run locally on W
 
 ```
 beauty-ai/
-  app/                          # Expo Router routes
-    _layout.tsx                 # Root layout: SessionProvider + protected Stack
-    (auth)/
-      _layout.tsx               # Public stack
-      sign-in.tsx               # Email OTP + Apple Sign-In screen
-    (app)/
-      _layout.tsx               # Authenticated stack
-      index.tsx                 # Home screen (shows profile, sign out)
   src/
+    app/                        # Expo Router routes (template uses src/app)
+      _layout.tsx               # Root layout: SessionProvider + protected Stack
+      (auth)/
+        _layout.tsx             # Public stack
+        sign-in.tsx             # Email OTP + Apple Sign-In screen
+      (app)/
+        _layout.tsx             # Authenticated stack
+        index.tsx               # Home screen (shows profile, sign out)
     lib/
       supabase.ts               # Supabase client (AsyncStorage + auto-refresh)
     auth/
       session.tsx               # SessionProvider + useSession()
       email.ts                  # Pure email-normalize/validate helpers
       email.test.ts
+      AppleSignInButton.tsx     # Apple Sign-In button (iOS)
     profile/
       profile.ts                # Profile type + getProfile/updateDisplayName
       profile.test.ts
@@ -106,21 +117,9 @@ git commit -m "chore: scaffold Expo Router app (SDK 56)"
 - Modify: `tsconfig.json`
 - Modify: `package.json` (via expo install — do not hand-edit versions)
 
-- [ ] **Step 1: Set the `@/*` path alias**
+- [ ] **Step 1: Verify the `@/*` path alias (already provided by the template)**
 
-Replace `tsconfig.json` with:
-```json
-{
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true,
-    "paths": {
-      "@/*": ["./src/*"]
-    }
-  },
-  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts"]
-}
-```
+The SDK 56 template's `tsconfig.json` already contains `"@/*": ["./src/*"]` (and `"@/assets/*": ["./assets/*"]`). Do NOT overwrite it. Just confirm by reading `tsconfig.json` that `@/*` maps to `./src/*`. No change needed.
 
 - [ ] **Step 2: Install runtime dependencies (expo install picks SDK-compatible versions)**
 
