@@ -1,4 +1,5 @@
 /** @jest-environment node */
+import { randomUUID } from 'node:crypto';
 import { createClient } from '@supabase/supabase-js';
 
 const url = process.env.EXPO_PUBLIC_SUPABASE_URL!;
@@ -20,11 +21,13 @@ async function signUpUser(email: string) {
 
 describe('profiles RLS', () => {
   it('a user cannot read another user’s profile', async () => {
-    const a = await signUpUser(`a_${Date.now()}@example.com`);
-    const b = await signUpUser(`b_${Date.now()}@example.com`);
+    // Unique emails per run (UUID, not a millisecond timestamp that can collide).
+    const a = await signUpUser(`a_${randomUUID()}@example.com`);
+    const b = await signUpUser(`b_${randomUUID()}@example.com`);
 
-    // User A reads their own profile: present.
+    // User A reads their own profile: present (and the read itself succeeds).
     const own = await a.client.from('profiles').select('id').eq('id', a.userId).maybeSingle();
+    expect(own.error).toBeNull();
     expect(own.data?.id).toBe(a.userId);
 
     // User A tries to read User B's profile: RLS hides it (no row).
